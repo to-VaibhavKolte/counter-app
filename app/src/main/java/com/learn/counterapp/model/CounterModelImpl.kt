@@ -1,6 +1,8 @@
 package com.learn.counterapp.model
 
-class CounterModelImpl : CounterModel {
+import com.learn.counterapp.CounterContract
+
+class CounterModelImpl : CounterContract.Model {
 
     private var counter = 0
     override fun increment() {

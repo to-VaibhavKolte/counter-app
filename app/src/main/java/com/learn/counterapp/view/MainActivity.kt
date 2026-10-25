@@ -5,24 +5,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.learn.counterapp.CounterContract
 import com.learn.counterapp.R
-import com.learn.counterapp.controller.CounterController
-import com.learn.counterapp.controller.CounterControllerImpl
-import com.learn.counterapp.model.CounterModel
-import com.learn.counterapp.model.CounterModelImpl
+import com.learn.counterapp.presenter.PresenterFactory
 
-class MainActivity : AppCompatActivity(), CounterView {
+class MainActivity : AppCompatActivity(), CounterContract.View {
 
-    // Model
-    private val model: CounterModel by lazy { CounterModelImpl() }
 
-    // Controller
-    private val controller: CounterController by lazy {
-        CounterControllerImpl(
-            model,
-            this
-        )
-    }
+    private lateinit var presenter: CounterContract.Presenter
 
     // Views
     private val tvCounter by lazy { findViewById<TextView>(R.id.tvCounter) }
@@ -34,16 +24,24 @@ class MainActivity : AppCompatActivity(), CounterView {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        presenter = PresenterFactory.provide()
+        presenter.attach(this)
+
         btIncrement.setOnClickListener {
-            controller.onIncrementClick()
+            presenter.onIncrementClick()
         }
 
         btDecrement.setOnClickListener {
-            controller.onDecrementClick()
+            presenter.onDecrementClick()
         }
     }
 
     override fun showText(counter: Int) {
         tvCounter.text = counter.toString()
+    }
+
+    override fun onDestroy() {
+        presenter.detach()
+        super.onDestroy()
     }
 }
